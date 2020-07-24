@@ -171,13 +171,13 @@ def modal_edit_student(request):
 
 
 def teachers(request):
-    #teas_list = sqlhelper.get_list('select tea_id,tea_name from tea_info',[])
+    # teas_list = sqlhelper.get_list('select tea_id,tea_name from tea_info',[])
 
     teas_list = sqlhelper.get_list("""
         SELECT tea_info.tea_id as tea_id,tea_info.tea_name as tea_name,class_info.class_name as class_name from tea_info
             LEFT JOIN teatocla on tea_info.tea_id = teatocla.teatocla_tea_id
-            LEFT JOIN class_info ON class_info.class_id = teatocla.teaticla_class_id
-    """,[])
+            LEFT JOIN class_info ON class_info.class_id = teatocla.teatocla_class_id
+    """, [])
     result = {}
     for row in teas_list:
         tea_id = row['tea_id']
@@ -186,10 +186,48 @@ def teachers(request):
         else:
             result[tea_id] = {'tea_id': row['tea_id'], 'tea_name': row['tea_name'], 'class_name': [row['class_name'], ]}
 
-    return render(request,'teachers.html',{'teas_list':result.values()})
+    return render(request, 'teachers.html', {'teas_list': result.values()})
 
 
 # 新url增加老师
 def add_teacher(request):
-    #pass
-    pass
+    if request.method == "GET":
+        classes_list = sqlhelper.get_list('select class_id,class_name from class_info', [])
+        return render(request, 'add_teacher.html', {"classes_list": classes_list})
+    else:
+        tea_name = request.POST.get('tea_name')
+
+
+        lastrowid = sqlhelper.create('insert into tea_info(tea_name) values(%s)', [tea_name, ])
+
+        class_list = request.POST.getlist('class_ids')
+
+        # for row in class_list:
+        #     sqlhelper.modify('insert into teatocla(teatocla_tea_id,teatocla_class_id) values(%s,%s)',
+        #                      [lastrowid, row, ])
+
+        #连接一次,提交多次
+        # obj = sqlhelper.SqlHelper()
+        # for row in class_list:
+        #     sqlhelper.modify('insert into teatocla(teatocla_tea_id,teatocla_class_id) values(%s,%s)',
+        #                      [lastrowid, row, ])
+        # obj.close()
+
+        #连接一次，提交一次
+        data_list=[]
+        for row in class_list:
+            temp = (lastrowid,row)
+            data_list.append(temp)
+
+        obj = sqlhelper.SqlHelper()
+        obj.multiple_modify('insert into teatocla(teatocla_tea_id,teatocla_class_id) values(%s,%s)',
+                            data_list)
+        obj.close()
+
+        return redirect('/teachers/')
+
+
+def del_teacher(request):
+    nid = request.GET.get('nid')
+    sqlhelper.delete('delete from tea_info where tea_id=%s', [nid, ])
+    return redirect('/teachers/')

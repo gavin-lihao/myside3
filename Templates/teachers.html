@@ -42,8 +42,8 @@
 </head>
 <body>
     <h1>classes Page</h1>
-    <a href="/add_class/">New</a>
-    <a onclick="showModal();">对话框添加</a>
+    <a href="/add_teacher/">添加新的老师</a>
+    <!--<a onclick="showModal();">对话框添加</a>-->
     <table border="1">
         <thead>
             <tr>
@@ -67,8 +67,8 @@
                     {%endfor%}
                 </td>
 
-                <td><a href="/del_tea/?nid={{ row.tea_id }}">DEL</a></td>
-                <td><a href="/edit_tea/?nid={{ row.tea_id }}">EDIT</a></td>
+                <td><a href="/del_teacher/?nid={{ row.tea_id }}">DEL</a></td>
+                <td><a href="/edit_teacher/?nid={{ row.tea_id }}">EDIT</a></td>
                 <td><a>对话框编辑</a></td>
             </tr>
             {% endfor%}
