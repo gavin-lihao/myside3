@@ -197,7 +197,6 @@ def add_teacher(request):
     else:
         tea_name = request.POST.get('tea_name')
 
-
         lastrowid = sqlhelper.create('insert into tea_info(tea_name) values(%s)', [tea_name, ])
 
         class_list = request.POST.getlist('class_ids')
@@ -206,17 +205,17 @@ def add_teacher(request):
         #     sqlhelper.modify('insert into teatocla(teatocla_tea_id,teatocla_class_id) values(%s,%s)',
         #                      [lastrowid, row, ])
 
-        #连接一次,提交多次
+        # 连接一次,提交多次
         # obj = sqlhelper.SqlHelper()
         # for row in class_list:
         #     sqlhelper.modify('insert into teatocla(teatocla_tea_id,teatocla_class_id) values(%s,%s)',
         #                      [lastrowid, row, ])
         # obj.close()
 
-        #连接一次，提交一次
-        data_list=[]
+        # 连接一次，提交一次
+        data_list = []
         for row in class_list:
-            temp = (lastrowid,row)
+            temp = (lastrowid, row)
             data_list.append(temp)
 
         obj = sqlhelper.SqlHelper()
@@ -231,3 +230,29 @@ def del_teacher(request):
     nid = request.GET.get('nid')
     sqlhelper.delete('delete from tea_info where tea_id=%s', [nid, ])
     return redirect('/teachers/')
+
+
+def edit_teacher(request):
+    nid = request.GET.get('nid')
+    if request.method == "GET":
+
+        obj = sqlhelper.SqlHelper()
+        teacher = obj.get_one('select tea_id,tea_name from tea_info where tea_id=%s', [nid, ])
+        teatocla_list = obj.get_list('select teatocla_class_id from teatocla where teatocla_tea_id =%s', [nid, ])
+        classes_list = obj.get_list('select class_id,class_name from class_info', [])
+        obj.close()
+        # print('1', teacher)
+        # print('2', teatocla_list)
+        # print('3', classes_list)
+        temp = []
+        for row in teatocla_list:
+            temp.append(row['teatocla_class_id'])
+        print(temp)
+        return render(request, "edit_teacher.html", {
+            'teacher': teacher,
+            'teatocla_list': temp,
+            'classes_list': classes_list,
+        })
+
+    else:
+        pass

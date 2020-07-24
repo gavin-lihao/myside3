@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>edit teacher</title>
+</head>
+<body>
+    <h1>edit teacher Page</h1>
+    <form method="POST" action="/edit_teacher/">
+        <p>Teacher Name:<input type="text" name="tea_name" value="{{teacher.tea_name}}"></p>
+        <p>Teacher'Class:
+            <select multiple size="10" name="class_ids">
+                {%for row in classes_list %}
+                    {% if row.class_id in teatocla_list %}
+                        <option value="{{ row.class_id }}" selected>{{ row.class_name }}</option>
+                    {% else %}
+                        <option value="{{ row.class_id }}">{{ row.class_name }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+
+        </p>
+        <p><input type="submit" value="Submite"></p>
+    </form>
+
+</body>
+</html>
