@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student page</title>
+    <style>
+        .hide {
+            display: none;
+        }
+
+        .shadow {
+            position: fixed;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            background-color: black;
+            opacity: 0.4;
+            z-index: 999;
+        }
+
+        .modal {
+            z-index: 1000;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            height: 300px;
+            width: 400px;
+            background: white;
+            margin-left: -200px;
+            margin-top: -150px;
+        }
+        td {
+            text-align: center;
+            }
+    </style>
+    <script src="/static/jquery-3.4.1.js"></script>
+    <script src="/static/DataTables/DataTables-1.10.21/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/DataTables/DataTables-1.10.21/css/jquery.dataTables.min.css">
+
+</head>
+<body>
+<h1>Student Page</h1>
+<h1>Student Page</h1>
+<a href="/add_student/">新增</a>-----
+<a id="addStuModal">编辑框新增</a>
+
+<table id="stuTable">
+    <thead>
+    <tr>
+        <th>学生ID</th>
+        <th>学生姓名</th>
+        <th>学生班级</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for row in students_list %}
+    <tr>
+        <td>{{row.stu_id}}</td>
+        <td>{{row.stu_name }}</td>
+        <td clsId="{{row.stu_class_id}}">{{row.class_name }}</td>
+        <td>
+            <a href="/del_student/?nid={{ row.stu_id }}">DEL</a>|
+            <a href="/edit_student/?nid={{ row.stu_id }}">EDIT</a>
+            <a class="editStuModal">编辑框编辑</a>
+        </td>
+    </tr>
+    {% endfor%}
+    </tbody>
+    <thead>
+    <tr>
+        <th>学生ID</th>
+        <th>学生姓名</th>
+        <th>学生班级</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <div id="shadow" class="shadow hide"></div>
+    <div id="addModal" class="modal hide">
+    <h1>增加新的学生信息</h1>
+        <p>学生姓名：<input id="addStuName" type="text" name="stuName" placeholder="请输入要新增加学生的姓名"/></p>
+
+        <p>
+            学生班级：
+            <select id="classId" name="classId">
+                {%for row in classes_list%}
+                <option value="{{row.class_id}}">{{row.class_name}}</option>
+                {%endfor%}
+            </select>
+        </p>
+        <p>
+            <input id="addNewStuBtn" type="button" value="提交"/>
+            <input id="addMoveModal" type="button" value="取消"/>
+        </p>
+        <p>
+            <span id="addErrorMessage"></span>
+        </p>
+
+    </div>
+
+    <div id="editModal" class="modal hide">
+        <h1>编辑新的学生信息</h1>
+        <p>学生姓名：<input id="editStuName" type="text" name="stuName"/>
+            <input id="editStuId" type="text" name="stuName"style="display: none"/>
+
+        </p>
+
+        <p>
+            学生班级：
+            <select id="editClassId" name="classId">
+                {%for row in classes_list%}
+                <option value="{{row.class_id}}">{{row.class_name}}</option>
+                {%endfor%}
+            </select>
+        </p>
+        <p>
+            <input id="editNewStuBtn" type="button" value="提交"/>
+            <input id="editMoveModal" type="button" value="取消"/>
+        </p>
+        <p>
+            <span id="editErrorMessage"></span>
+        </p>
+
+    </div>
+
+</table>
+<script>
+
+    $(function(){
+        //点击取消，回到正常桌面
+        $('#addMoveModal').click(function () {
+            $('#shadow,#addModal').addClass('hide')
+        });
+
+        $('#editMoveModal').click(function () {
+            $('#shadow,#editModal').addClass('hide')
+        });
+
+        $('#addStuModal').click(function(){
+            $('#shadow,#addModal').removeClass('hide');
+        });
+
+        $('#editStuModal').click(function(){
+            $('#shadow,#editModal').removeClass('hide');
+        });
+
+        //增加新学生信息
+        $('#addNewStuBtn').click(function(){
+            var stu_name = $('#addStuName').val();
+            var class_id = $('#classId').val();
+            console.log(stu_name,class_id);
+            $.ajax({
+                url:'/modal_add_student/',
+                type:'POST',
+                data:{"stu_name":stu_name,"class_id":class_id},
+
+                success:function (arg) {
+                    arg = JSON.parse(arg);
+                    if(arg.state){
+
+                        location.reload();
+                    }else {
+                        alert(arg.message);
+                        //$('#addErrorMessage').val(arg.message)
+                    }
+                }
+            })
+        });
+
+        $(".editStuModal").click(function () {
+            $('#shadow,#editModal').removeClass('hide');
+            var ss = $(this).parent().prevAll();
+
+
+            var stu_id = $(ss[2]).text();
+            var stu_name = $(ss[1]).text();
+            var class_id = $(ss[0]).attr('clsId');
+            //console.log(stu_id,stu_name,class_id)
+
+            $('#editStuId').val(stu_id);
+            $('#editStuName').val(stu_name);
+            $('#editClassId').val(class_id)
+        });
+
+        $('#editNewStuBtn').click(function () {
+            $.ajax({
+                url:'/modal_edit_student/',
+                type:'POST',
+                data:{
+                    'stu_id':$('#editStuId').val(),
+                    'stu_name':$('#editStuName').val(),
+                    'class_id':$('#editClassId').val()
+
+                },
+                dataType: 'JSON',
+                success:function (arg) {
+                    if(arg.state){
+                        location.reload();
+                    }else{
+
+                        $('#editErrorMessage').val(arg.message)
+                    }
+                }
+            })
+        })
+    });
+
+    $(document).ready(function(){
+        $('#stuTable').DataTable();
+    });
+</script>
+
+</body>
+</html>

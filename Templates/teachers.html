@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Classes Page</title>
+    <style>
+
+        .hide{
+            display: none;
+
+        }
+
+        .shadow {
+            position: fixed;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            background-color: black;
+            opacity: 0.4;
+            z-index: 999;
+
+
+        }
+
+        .modal{
+            z-index: 1000;
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            height: 300px;
+            width: 400px;
+            background: white;
+            margin-left: -200px;
+            margin-top: -150px;
+        }
+        th td{
+
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>classes Page</h1>
+    <a href="/add_class/">New</a>
+    <a onclick="showModal();">对话框添加</a>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>老师ID</th>
+                <th>老师姓名</th>
+                <th>任教班级</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in teas_list %}
+            <tr>
+                <td>{{row.tea_id}}</td>
+                <td>{{row.tea_name }}</td>
+
+                <td>
+                    {%for item in row.class_name%}
+
+                    <span style="color: red"><a href="https://www.baidu.com/">{{item}}</a></span>
+
+                    {%endfor%}
+                </td>
+
+                <td><a href="/del_tea/?nid={{ row.tea_id }}">DEL</a></td>
+                <td><a href="/edit_tea/?nid={{ row.tea_id }}">EDIT</a></td>
+                <td><a>对话框编辑</a></td>
+            </tr>
+            {% endfor%}
+        </tbody>
+
+    </table>
+
+    <div id="shadow" class="shadow hide"></div>
+    <div id="modal" class="modal hide">
+        <h1>对话框添加新的班级</h1>
+        <p>
+            <input id="newClass" type="text" name="className" />
+        </p>
+            <input type="button" value="提交" onclick="AjaxSend();" />
+            <input type="button" value="取消" onclick="moveModal();" />
+        <span id="NewErrorMessage"></span>
+    </div>
+
+    <div id="editModal" class="modal hide">
+        <h1>对话框编辑班级名称</h1>
+        <p>
+            <input id="editClassId" type="text" name="editClassId" style="display: none" />
+
+            <input id="editClassName" type="text" name="editClassName" />
+
+        </p>
+            <input type="button" value="提交" onclick="editAjaxSend();" />
+            <input type="button" value="取消" onclick="editMoveModal();" />
+        <span id="EditErrorMessage"></span>
+    </div>
+    <script src="/static/jquery-3.4.1.js"></script>
+    <script>
+        function showModal() {
+            document.getElementById('shadow').classList.remove('hide');
+            document.getElementById('modal').classList.remove('hide');
+        }
+
+        function moveModal() {
+            document.getElementById('shadow').classList.add('hide');
+            document.getElementById('modal').classList.add('hide');
+
+        }
+
+        function AjaxSend() {
+            $.ajax({
+                url:'/modal_add_class/',
+                type:'POST',
+                data:{'className': $('#newClass').val()},
+                success:function (data) {
+                    //当服务端处理完，返回数据时，自动调用(回调函数)
+                    //data=服务端返回的值
+                    console.log(data);
+                    if (data == 'ok'){
+                        location.href='/classes/';
+                    }else{
+                        $('#NewErrorMessage').text(data);
+                    }
+
+                }
+            })
+        }
+
+        function editMoveModal() {
+            document.getElementById('shadow').classList.add('hide');
+            document.getElementById('editModal').classList.add('hide');
+        }
+
+        function editModal(ths) {
+
+            document.getElementById('shadow').classList.remove('hide');
+            document.getElementById('editModal').classList.remove('hide');
+
+            var row = $(ths).parent().prevAll();
+            var editClassName = $(row[2]).text();
+            $('#editClassName').val(editClassName);
+
+            var editClassId = $(row[3]).text();
+            $('#editClassId').val(editClassId);
+        }
+
+        function editAjaxSend(){
+
+            var editClassId = $('#editClassId').val();
+            var editClassName = $('#editClassName').val();
+            //console.log(editClassId,editClassName)
+            $.ajax({
+                url:'/modal_edit_class/',
+                type:'POST',
+                data:{'editClassName': editClassName,'editClassId':editClassId},
+                success:function (arg) {
+                    arg = JSON.parse(arg);
+                    if(arg.state){
+
+                        location.reload();
+
+                    }else{
+
+                        alert(arg.message);
+                    }
+
+
+                }
+            })
+        }
+    </script>
+</body>
+</html>

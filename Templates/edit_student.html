@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>new student</title>
+</head>
+<body>
+    <h1>New student Page</h1>
+    <form method="POST" action="/edit_student/?nid={{stu_name.stu_id}}">
+
+        <p>Student Name:<input type="text" name="stu_name" value="{{stu_name.stu_name}}"></p>
+        <p>Student Class:
+            <select name="classId">
+                    {% for row in class_list %}
+                        {% if row.class_id == stu_name.class_id %}
+                            <option selected value="{{ row.class_id }}">{{ row.class_name }}</option>
+                        {% else %}
+                            <option value="{{ row.class_id }}">{{ row.class_name }}</option>
+                        {% endif %}
+                    {% endfor %}
+            </select>
+
+        </p>
+        <p><input type="submit" value="Submite"></p>
+
+    </form>
+
+</body>
+</html>
