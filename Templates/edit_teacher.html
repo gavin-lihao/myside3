@@ -6,7 +6,8 @@
 </head>
 <body>
     <h1>edit teacher Page</h1>
-    <form method="POST" action="/edit_teacher/">
+    <form method="POST" action="/edit_teacher/?nid={{teacher.tea_id}}">
+        <p><input type="text" name="tea_id" value="{{teacher.tea_id}}" style="display: none"></p>
         <p>Teacher Name:<input type="text" name="tea_name" value="{{teacher.tea_name}}"></p>
         <p>Teacher'Class:
             <select multiple size="10" name="class_ids">

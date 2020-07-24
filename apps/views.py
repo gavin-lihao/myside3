@@ -217,7 +217,7 @@ def add_teacher(request):
         for row in class_list:
             temp = (lastrowid, row)
             data_list.append(temp)
-
+        print(data_list)
         obj = sqlhelper.SqlHelper()
         obj.multiple_modify('insert into teatocla(teatocla_tea_id,teatocla_class_id) values(%s,%s)',
                             data_list)
@@ -233,21 +233,16 @@ def del_teacher(request):
 
 
 def edit_teacher(request):
-    nid = request.GET.get('nid')
     if request.method == "GET":
-
+        nid = request.GET.get('nid')
         obj = sqlhelper.SqlHelper()
         teacher = obj.get_one('select tea_id,tea_name from tea_info where tea_id=%s', [nid, ])
         teatocla_list = obj.get_list('select teatocla_class_id from teatocla where teatocla_tea_id =%s', [nid, ])
         classes_list = obj.get_list('select class_id,class_name from class_info', [])
         obj.close()
-        # print('1', teacher)
-        # print('2', teatocla_list)
-        # print('3', classes_list)
         temp = []
         for row in teatocla_list:
             temp.append(row['teatocla_class_id'])
-        print(temp)
         return render(request, "edit_teacher.html", {
             'teacher': teacher,
             'teatocla_list': temp,
@@ -255,4 +250,20 @@ def edit_teacher(request):
         })
 
     else:
-        pass
+        tea_id = request.GET.get('nid')
+        tea_name = request.POST.get('tea_name')
+        class_id = request.POST.getlist('class_ids')
+
+        data_list = []
+        for row in class_id:
+            temp = (tea_id, row)
+            data_list.append(temp)
+        print(data_list)
+
+        obj = sqlhelper.SqlHelper()
+        obj.modify('update tea_info set tea_name = %s where tea_id = %s', [tea_name, tea_id])
+        obj.modify('delete from teatocla where teatocla_tea_id = %s', [tea_id, ])
+
+        obj.multiple_modify('insert into teatocla(teatocla_tea_id,teatocla_class_id) values(%s,%s)', data_list)
+        obj.close()
+        return redirect('/teachers/')
