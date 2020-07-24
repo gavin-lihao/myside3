@@ -191,6 +191,4 @@ def teachers(request):
 
 # 新url增加老师
 def add_teacher(request):
-
-    #暂时pass
     pass
