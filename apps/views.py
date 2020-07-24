@@ -187,3 +187,8 @@ def teachers(request):
             result[tea_id] = {'tea_id': row['tea_id'], 'tea_name': row['tea_name'], 'class_name': [row['class_name'], ]}
 
     return render(request,'teachers.html',{'teas_list':result.values()})
+
+
+# 新url增加老师
+def add_teacher(request):
+    pass
