@@ -109,12 +109,13 @@ class SqlHelper(object):
         return result
 
     def modify(self, sql, args):
-        # self.cursor.execute(insert into db(id,name), [(1,'name1'),(2,'name2')])
+
 
         self.cursor.execute(sql, args)
         self.conn.commit()
 
     def multiple_modify(self, sql, args):
+        # self.cursor.executemany(insert into db(id,name), [(1,'name1'),(2,'name2')])
         self.cursor.executemany(sql, args)
         self.conn.commit()
 
