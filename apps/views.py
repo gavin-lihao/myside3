@@ -263,7 +263,6 @@ def edit_teacher(request):
         obj = sqlhelper.SqlHelper()
         obj.modify('update tea_info set tea_name = %s where tea_id = %s', [tea_name, tea_id])
         obj.modify('delete from teatocla where teatocla_tea_id = %s', [tea_id, ])
-
         obj.multiple_modify('insert into teatocla(teatocla_tea_id,teatocla_class_id) values(%s,%s)', data_list)
         obj.close()
         return redirect('/teachers/')
