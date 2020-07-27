@@ -302,9 +302,14 @@ def modal_add_teachers(request):
 
 
 def get_tea_class_list(request):
-    tea_id = request.GET.get('tea_list')
+    tea_id = request.GET.get('tea_id')
     obj = sqlhelper.SqlHelper()
 
-    obj.get_one('select tea_id,tea_name from tea_info where tea_id = (%s)', [tea_id, ])
-    obj.get_list('select class_id,class_name from class_info', [])
-    obj.get_list('select teatocla_class_id from teatocla where teatocla_tea_id = (%s)', [tea_id])
+    tea_name = obj.get_one('select tea_id,tea_name from tea_info where tea_id = (%s)', [tea_id, ])
+    classes_list = obj.get_list('select class_id,class_name from class_info', [])
+    class_list = obj.get_list('select teatocla_class_id from teatocla where teatocla_tea_id = (%s)', [tea_id])
+    datalist={'tea_name':tea_name,'classes_list':classes_list,'class_list':class_list}
+    obj.close()
+    print(tea_name,classes_list,class_list)
+    #传到前端需要包含以下信息：教师姓名，教师任教班级，全部班级
+    return HttpResponse(json.dumps(datalist))

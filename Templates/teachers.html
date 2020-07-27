@@ -65,6 +65,7 @@
     </tr>
     </thead>
     <tbody>
+
     {% for row in teas_list %}
     <tr>
         <td>{{row.tea_id}}</td>
@@ -137,6 +138,10 @@
             $('#moveAddTeaBut').click(function () {
                 $('#shadow,#addModal').addClass('hide');
             });
+
+            $('#moveEditTeaBut').click(function () {
+                $('#shadow,#editModal').addClass('hide');
+            });
         }
 
         /*
@@ -176,8 +181,6 @@
                 });
             });
         }
-
-
         /**
          * 点击添加按钮出现的
          *
@@ -217,17 +220,18 @@
 
                 var tea_name = $(tt[3]).text();
                 var tea_id = $(tt[4]).text();
-                console.log($(tt[2]).attr('clsId'))
+                //console.log($(tt[2]).attr('clsId'))
 
-                // $.ajax({
-                //     url:'/get_tea_class_list/',
-                //     type:'GET',
-                //     dataType:'JSON',
-                //     success:function (arg) {
-                //
-                //     }
-                //
-                // });
+                $.ajax({
+                    url:'/get_tea_class_list/',
+                    type:'GET',
+                    dataType:'JSON',
+                    data:{'tea_id':tea_id},
+                    success:function (arg) {
+                        console.log(arg)
+                    }
+
+                });
             });
         }
 
