@@ -118,7 +118,7 @@ class SqlHelper(object):
         # self.cursor.executemany(insert into db(id,name), [(1,'name1'),(2,'name2')])
         self.cursor.executemany(sql, args)
         self.conn.commit()
-
+    #返回值（返回添加的id）
     def create(self, sql, args):
         self.cursor.execute(sql, args)
         self.conn.commit()

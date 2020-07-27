@@ -41,7 +41,6 @@
 </head>
 <body>
 <h1>Student Page</h1>
-<h1>Student Page</h1>
 <a href="/add_student/">新增</a>-----
 <a id="addStuModal">编辑框新增</a>
 
@@ -171,8 +170,6 @@
         $(".editStuModal").click(function () {
             $('#shadow,#editModal').removeClass('hide');
             var ss = $(this).parent().prevAll();
-
-
             var stu_id = $(ss[2]).text();
             var stu_name = $(ss[1]).text();
             var class_id = $(ss[0]).attr('clsId');

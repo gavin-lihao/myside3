@@ -5,7 +5,7 @@
     <title>Classes Page</title>
     <style>
 
-        .hide{
+        .hide {
             display: none;
 
         }
@@ -19,11 +19,21 @@
             background-color: black;
             opacity: 0.4;
             z-index: 999;
+        }
 
+        .loading {
+            position: fixed;
+            height: 200px;
+            width: 250px;
+            left: 50%;
+            top: 50%;
+            background-image: url("/static/images/loading.gif");
+            margin-left: -125px;
+            margin-top: -80px;
 
         }
 
-        .modal{
+        .modal {
             z-index: 1000;
             position: fixed;
             left: 50%;
@@ -34,145 +44,199 @@
             margin-left: -200px;
             margin-top: -150px;
         }
-        th td{
+
+        th td {
 
             text-align: center;
         }
     </style>
 </head>
 <body>
-    <h1>teacher Page</h1>
-    <a href="/add_teacher/">添加新的老师</a>
-    <!--<a onclick="showModal();">对话框添加</a>-->
-    <table border="1">
-        <thead>
-            <tr>
-                <th>老师ID</th>
-                <th>老师姓名</th>
-                <th>任教班级</th>
-                <th>操作</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in teas_list %}
-            <tr>
-                <td>{{row.tea_id}}</td>
-                <td>{{row.tea_name }}</td>
+<h1>teacher Page</h1>
+<a href="/add_teacher/">添加新的老师</a>
+<a id="addTeacher">对话框添加</a>
+<table border="1">
+    <thead>
+    <tr>
+        <th>老师ID</th>
+        <th>老师姓名</th>
+        <th>任教班级</th>
+        <th>操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for row in teas_list %}
+    <tr>
+        <td>{{row.tea_id}}</td>
+        <td>{{row.tea_name }}</td>
 
-                <td>
-                    {%for item in row.class_name%}
+        <td>
+            {%for item in row.class_name%}
+            <span style='display: none'></span>
+            <span style="color: red"><a href="https://www.baidu.com/">{{item}}</a></span>
+            {%endfor%}
+        </td>
 
-                    <span style="color: red"><a href="https://www.baidu.com/">{{item}}</a></span>
+        <td><a href="/del_teacher/?nid={{ row.tea_id }}">DEL</a></td>
+        <td><a href="/edit_teacher/?nid={{ row.tea_id }}">EDIT</a></td>
+        <td><a class="editModal">ModalEdit</a></td>
+    </tr>
+    {% endfor%}
+    </tbody>
+</table>
 
-                    {%endfor%}
-                </td>
 
-                <td><a href="/del_teacher/?nid={{ row.tea_id }}">DEL</a></td>
-                <td><a href="/edit_teacher/?nid={{ row.tea_id }}">EDIT</a></td>
-                <td><a>对话框编辑</a></td>
-            </tr>
-            {% endfor%}
-        </tbody>
+<div id="shadow" class="shadow hide"></div>
+<div id="loading" class="loading hide"></div>
 
-    </table>
+<!--modal添加老师-->
+<div id="addModal" class="modal hide">
+    <h1>对话框添加新老师</h1>
+    <p>
+        <input id="addTeaName" type="text" name="teaName"/>
+    </p>
+    <p>
+        <select id="classIds" multiple size="10">
 
-    <div id="shadow" class="shadow hide"></div>
-    <div id="modal" class="modal hide">
-        <h1>对话框添加新的班级</h1>
-        <p>
-            <input id="newClass" type="text" name="className" />
-        </p>
-            <input type="button" value="提交" onclick="AjaxSend();" />
-            <input type="button" value="取消" onclick="moveModal();" />
-        <span id="NewErrorMessage"></span>
-    </div>
 
-    <div id="editModal" class="modal hide">
-        <h1>对话框编辑班级名称</h1>
-        <p>
-            <input id="editClassId" type="text" name="editClassId" style="display: none" />
+        </select>
+    </p>
+    <input id="addTeaBut" type="button" value="提交"/>
+    <input id="moveAddTeaBut" type="button" value="取消"/>
+    <span id="NewErrorMessage"></span>
+</div>
 
-            <input id="editClassName" type="text" name="editClassName" />
+<!--modal编辑老师-->
+<div id="editModal" class="modal hide">
+    <h1>对话框编辑老师</h1>
+    <p>
+        <input id="editTeaName" type="text" name="teaName"/>
+    </p>
+    <p>
+        <select id="editclassIds" multiple size="10">
 
-        </p>
-            <input type="button" value="提交" onclick="editAjaxSend();" />
-            <input type="button" value="取消" onclick="editMoveModal();" />
-        <span id="EditErrorMessage"></span>
-    </div>
-    <script src="/static/jquery-3.4.1.js"></script>
-    <script>
-        function showModal() {
-            document.getElementById('shadow').classList.remove('hide');
-            document.getElementById('modal').classList.remove('hide');
-        }
+
+        </select>
+    </p>
+    <input id="editTeaBut" type="button" value="提交"/>
+    <input id="moveEditTeaBut" type="button" value="取消"/>
+    <span id="editErrorMessage"></span>
+</div>
+
+<script src="/static/jquery-3.4.1.js"></script>
+<script>
+    $(function () {
+
+        moveModal();
+        addModal();
+        addSubmit();
+        editModal();
+        editSubmit();
 
         function moveModal() {
-            document.getElementById('shadow').classList.add('hide');
-            document.getElementById('modal').classList.add('hide');
-
+            $('#moveAddTeaBut').click(function () {
+                $('#shadow,#addModal').addClass('hide');
+            });
         }
 
-        function AjaxSend() {
-            $.ajax({
-                url:'/modal_add_class/',
-                type:'POST',
-                data:{'className': $('#newClass').val()},
-                success:function (data) {
-                    //当服务端处理完，返回数据时，自动调用(回调函数)
-                    //data=服务端返回的值
-                    console.log(data);
-                    if (data == 'ok'){
-                        location.href='/classes/';
-                    }else{
-                        $('#NewErrorMessage').text(data);
+        /*
+        * 点击 添加
+        *
+        * */
+        function addModal() {
+            /*
+        * 出现加载框
+        * */
+            $('#addTeacher').click(function () {
+                $('#shadow,#loading').removeClass('hide');
+                /*
+                * jq加载班级列表
+                * */
+                $.ajax({
+                    url: '/get_all_classes/',
+                    type: 'GET',
+                    dataType: 'JSON',
+                    success: function (arg) {
+                        /*
+                         arg = [
+                            {class_id:1,class_name:xx}
+                            {class_id:2,class_name:xx}
+                            {class_id:3,class_name:xx}
+                         ]
+                        */
+                        $.each(arg, function (i, row) {
+                            var tag = document.createElement('option');
+                            tag.innerHTML = row.class_name;
+                            tag.setAttribute('value', row.class_id);
+                            $('#classIds').append(tag)
+                        });
+                        $('#loading').addClass('hide');
+                        $('#addModal').removeClass('hide')
                     }
-
-                }
-            })
+                });
+            });
         }
 
-        function editMoveModal() {
-            document.getElementById('shadow').classList.add('hide');
-            document.getElementById('editModal').classList.add('hide');
-        }
 
-        function editModal(ths) {
+        /**
+         * 点击添加按钮出现的
+         *
+         */
+        function addSubmit() {
+            $('#addTeaBut').click(function () {
+                var tea_name = $('#addTeaName').val();
+                var add_class_list = $('#classIds').val();
+                console.log(tea_name, add_class_list);
 
-            document.getElementById('shadow').classList.remove('hide');
-            document.getElementById('editModal').classList.remove('hide');
+                $.ajax({
+                    url: '/modal_add_teachers/',
+                    type: 'POST',
+                    data: {'tea_name': tea_name, 'add_class_list': add_class_list},
+                    traditional: true, //如果提交的数据的值有列表，则需要添加此属性
+                    dataType: 'JSON',
+                    success: function (arg) {
+                        if (arg.state) {
+                            location.reload();
+                        } else {
+                            $('#NewErrorMessage').val(arg.message);
 
-            var row = $(ths).parent().prevAll();
-            var editClassName = $(row[2]).text();
-            $('#editClassName').val(editClassName);
-
-            var editClassId = $(row[3]).text();
-            $('#editClassId').val(editClassId);
-        }
-
-        function editAjaxSend(){
-
-            var editClassId = $('#editClassId').val();
-            var editClassName = $('#editClassName').val();
-            //console.log(editClassId,editClassName)
-            $.ajax({
-                url:'/modal_edit_class/',
-                type:'POST',
-                data:{'editClassName': editClassName,'editClassId':editClassId},
-                success:function (arg) {
-                    arg = JSON.parse(arg);
-                    if(arg.state){
-
-                        location.reload();
-
-                    }else{
-
-                        alert(arg.message);
+                        }
                     }
+                });
+            });
 
-
-                }
-            })
         }
-    </script>
+
+        /*点击修改*/
+        function editModal() {
+            $('.editModal').click(function () {
+                $('#shadow,#editModal').removeClass('hide');
+                // $('#shadow,#loading').removeClass('hide');
+
+                var tt = $(this).parent().prevAll();
+
+                var tea_name = $(tt[3]).text();
+                var tea_id = $(tt[4]).text();
+                console.log($(tt[2]).attr('clsId'))
+
+                // $.ajax({
+                //     url:'/get_tea_class_list/',
+                //     type:'GET',
+                //     dataType:'JSON',
+                //     success:function (arg) {
+                //
+                //     }
+                //
+                // });
+            });
+        }
+
+        /* 点击修改确认按钮*/
+        function editSubmit() {
+
+        }
+
+    })
+</script>
 </body>
 </html>

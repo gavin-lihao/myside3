@@ -2,6 +2,7 @@ from django.shortcuts import render, HttpResponse, redirect
 import pymysql
 from utils import sqlhelper
 import json
+import time
 
 
 def classes(request):
@@ -178,6 +179,7 @@ def teachers(request):
             LEFT JOIN teatocla on tea_info.tea_id = teatocla.teatocla_tea_id
             LEFT JOIN class_info ON class_info.class_id = teatocla.teatocla_class_id
     """, [])
+    #print(teas_list)
     result = {}
     for row in teas_list:
         tea_id = row['tea_id']
@@ -185,7 +187,7 @@ def teachers(request):
             result[tea_id]['class_name'].append(row['class_name'])
         else:
             result[tea_id] = {'tea_id': row['tea_id'], 'tea_name': row['tea_name'], 'class_name': [row['class_name'], ]}
-
+    #print(result)
     return render(request, 'teachers.html', {'teas_list': result.values()})
 
 
@@ -196,9 +198,7 @@ def add_teacher(request):
         return render(request, 'add_teacher.html', {"classes_list": classes_list})
     else:
         tea_name = request.POST.get('tea_name')
-
         lastrowid = sqlhelper.create('insert into tea_info(tea_name) values(%s)', [tea_name, ])
-
         class_list = request.POST.getlist('class_ids')
 
         # for row in class_list:
@@ -217,7 +217,7 @@ def add_teacher(request):
         for row in class_list:
             temp = (lastrowid, row)
             data_list.append(temp)
-        print(data_list)
+        # print(data_list)
         obj = sqlhelper.SqlHelper()
         obj.multiple_modify('insert into teatocla(teatocla_tea_id,teatocla_class_id) values(%s,%s)',
                             data_list)
@@ -266,3 +266,45 @@ def edit_teacher(request):
         obj.multiple_modify('insert into teatocla(teatocla_tea_id,teatocla_class_id) values(%s,%s)', data_list)
         obj.close()
         return redirect('/teachers/')
+
+
+# 加载老师列表，对话框添加老师方式的班级列表
+def get_all_classes(request):
+    # time.sleep(1)
+    obj = sqlhelper.SqlHelper()
+    classes_list = obj.get_list('select class_id,class_name from class_info', [])
+    # print(classes_list)
+    obj.close()
+    return HttpResponse(json.dumps(classes_list))
+
+
+def modal_add_teachers(request):
+    res = {'state': True, 'message': None}
+    try:
+        tea_name = request.POST.get('tea_name')
+        class_list = request.POST.getlist('add_class_list')
+
+        obj = sqlhelper.SqlHelper()
+        tea_id = obj.create('insert into tea_info(tea_name) values(%s)', [tea_name, ])
+
+        result = []
+        for row in class_list:
+            temp = (tea_id, row)
+            result.append(temp)
+        # print(result)
+        obj.multiple_modify('insert into teatocla(teatocla_tea_id,teatocla_class_id) values(%s,%s)', result)
+
+        # print(tea_name,class_list)
+    except Exception as e:
+        res['state'] = False
+        res['message'] = str(e)
+    return HttpResponse(json.dumps(res))
+
+
+def get_tea_class_list(request):
+    tea_id = request.GET.get('tea_list')
+    obj = sqlhelper.SqlHelper()
+
+    obj.get_one('select tea_id,tea_name from tea_info where tea_id = (%s)', [tea_id, ])
+    obj.get_list('select class_id,class_name from class_info', [])
+    obj.get_list('select teatocla_class_id from teatocla where teatocla_tea_id = (%s)', [tea_id])
