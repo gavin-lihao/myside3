@@ -71,9 +71,14 @@
         <td>{{row.tea_id}}</td>
         <td>{{row.tea_name }}</td>
 
+        <td style="display:none">
+            {% for item in row.class_id%}
+            <!--获取到全部Id-->
+            <span>{{item}}</span>
+            {% endfor%}
+        </td>
         <td>
             {%for item in row.class_name%}
-            <span style='display: none'></span>
             <span style="color: red"><a href="https://www.baidu.com/">{{item}}</a></span>
             {%endfor%}
         </td>
@@ -111,6 +116,7 @@
 <div id="editModal" class="modal hide">
     <h1>对话框编辑老师</h1>
     <p>
+        <span id="editTeaId" style="display: none"></span>
         <input id="editTeaName" type="text" name="teaName"/>
     </p>
     <p>
@@ -137,10 +143,12 @@
         function moveModal() {
             $('#moveAddTeaBut').click(function () {
                 $('#shadow,#addModal').addClass('hide');
+                $('#classIds').empty()
             });
 
             $('#moveEditTeaBut').click(function () {
                 $('#shadow,#editModal').addClass('hide');
+                $('#editclassIds').empty()
             });
         }
 
@@ -181,6 +189,7 @@
                 });
             });
         }
+
         /**
          * 点击添加按钮出现的
          *
@@ -189,7 +198,7 @@
             $('#addTeaBut').click(function () {
                 var tea_name = $('#addTeaName').val();
                 var add_class_list = $('#classIds').val();
-                console.log(tea_name, add_class_list);
+                //console.log(tea_name, add_class_list);
 
                 $.ajax({
                     url: '/modal_add_teachers/',
@@ -202,7 +211,6 @@
                             location.reload();
                         } else {
                             $('#NewErrorMessage').val(arg.message);
-
                         }
                     }
                 });
@@ -218,26 +226,62 @@
 
                 var tt = $(this).parent().prevAll();
 
-                var tea_name = $(tt[3]).text();
-                var tea_id = $(tt[4]).text();
-                //console.log($(tt[2]).attr('clsId'))
+                var tea_name = $(tt[4]).text();
+                var tea_id = $(tt[5]).text();
+                var class_id_list = $(tt[3]).text();
+                //console.log(tea_name, tea_id, class_id_list);
+                $('#editTeaId').val(tea_id);
+                $('#editTeaName').val(tea_name);
 
                 $.ajax({
-                    url:'/get_tea_class_list/',
-                    type:'GET',
-                    dataType:'JSON',
-                    data:{'tea_id':tea_id},
-                    success:function (arg) {
-                        console.log(arg)
+                    url: '/get_tea_class_list/',
+                    type: 'GET',
+                    dataType: 'JSON',
+                    success: function (arg) {
+                        $.each(arg, function (i, row) {
+                            //console.log(i);
+                            if(class_id_list.indexOf(row.class_id)>=0){
+                                var tag = document.createElement('option');
+                                tag.innerHTML = row.class_name;
+                                console.log(row.class_id);
+                                tag.setAttribute('selected','');
+                                tag.setAttribute('value', row.class_id);
+                                $('#editclassIds').append(tag);
+                            }else{
+                                var tag = document.createElement('option');
+                                tag.innerHTML = row.class_name;
+                                tag.setAttribute('value', row.class_id);
+                                $('#editclassIds').append(tag);
+                            }
+                        });
                     }
-
                 });
             });
         }
 
         /* 点击修改确认按钮*/
         function editSubmit() {
+            $('#editTeaBut').click(function () {
+                var tea_name = $('#editTeaName').val();
+                var tea_id = $('#editTeaId').val();
+                var classes_list = $('#editclassIds').val();
 
+                $.ajax({
+                    url:'/modal_edit_teacher/',
+                    type:'POST',
+                    data:{'tea_name':tea_name,'tea_id':tea_id,'classes_list':classes_list},
+                    traditional: true,
+                    dataType:'JSON',
+                    success:function (arg) {
+                        if(arg.state){
+                            location.reload();
+                        }else{
+                            $('#editErrorMessage').val(arg.message);
+                        }
+                    }
+
+                });
+            });
         }
 
     })

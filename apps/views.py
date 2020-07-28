@@ -175,19 +175,22 @@ def teachers(request):
     # teas_list = sqlhelper.get_list('select tea_id,tea_name from tea_info',[])
 
     teas_list = sqlhelper.get_list("""
-        SELECT tea_info.tea_id as tea_id,tea_info.tea_name as tea_name,class_info.class_name as class_name from tea_info
+        SELECT tea_info.tea_id as tea_id,tea_info.tea_name as tea_name,class_info.class_id as class_id,class_info.class_name as class_name from tea_info
             LEFT JOIN teatocla on tea_info.tea_id = teatocla.teatocla_tea_id
             LEFT JOIN class_info ON class_info.class_id = teatocla.teatocla_class_id
     """, [])
-    #print(teas_list)
-    result = {}
+    result = {
+
+    }
     for row in teas_list:
         tea_id = row['tea_id']
         if tea_id in result:
             result[tea_id]['class_name'].append(row['class_name'])
+            result[tea_id]['class_id'].append(row['class_id'])
         else:
-            result[tea_id] = {'tea_id': row['tea_id'], 'tea_name': row['tea_name'], 'class_name': [row['class_name'], ]}
-    #print(result)
+            result[tea_id] = {'tea_id': row['tea_id'], 'tea_name': row['tea_name'], 'class_id': [row['class_id'], ],
+                              'class_name': [row['class_name'], ]}
+    # print(result)
     return render(request, 'teachers.html', {'teas_list': result.values()})
 
 
@@ -283,18 +286,13 @@ def modal_add_teachers(request):
     try:
         tea_name = request.POST.get('tea_name')
         class_list = request.POST.getlist('add_class_list')
-
         obj = sqlhelper.SqlHelper()
         tea_id = obj.create('insert into tea_info(tea_name) values(%s)', [tea_name, ])
-
         result = []
         for row in class_list:
             temp = (tea_id, row)
             result.append(temp)
-        # print(result)
         obj.multiple_modify('insert into teatocla(teatocla_tea_id,teatocla_class_id) values(%s,%s)', result)
-
-        # print(tea_name,class_list)
     except Exception as e:
         res['state'] = False
         res['message'] = str(e)
@@ -302,14 +300,35 @@ def modal_add_teachers(request):
 
 
 def get_tea_class_list(request):
-    tea_id = request.GET.get('tea_id')
     obj = sqlhelper.SqlHelper()
-
-    tea_name = obj.get_one('select tea_id,tea_name from tea_info where tea_id = (%s)', [tea_id, ])
     classes_list = obj.get_list('select class_id,class_name from class_info', [])
-    class_list = obj.get_list('select teatocla_class_id from teatocla where teatocla_tea_id = (%s)', [tea_id])
-    datalist={'tea_name':tea_name,'classes_list':classes_list,'class_list':class_list}
+    datalist = {'classes_list': classes_list}
     obj.close()
-    print(tea_name,classes_list,class_list)
-    #传到前端需要包含以下信息：教师姓名，教师任教班级，全部班级
-    return HttpResponse(json.dumps(datalist))
+
+    return HttpResponse(json.dumps(classes_list))
+
+
+def modal_edit_teacher(request):
+    res = {'state': True, 'message': None}
+    try:
+        tea_name = request.POST.get('tea_name')
+        tea_id = request.POST.get('tea_id')
+        classes_list = request.POST.getlist('classes_list')
+
+        obj = sqlhelper.SqlHelper()
+        obj.modify('update tea_info set tea_name = (%s) where tea_id= %s', [tea_name, tea_id, ])
+        obj.modify('delete from teatocla where teatocla_tea_id = %s', [tea_id, ])
+
+        result = []
+        for row in classes_list:
+            temp = (tea_id, row)
+            result.append(temp)
+
+        #print(result)
+        obj.multiple_modify('insert into teatocla(teatocla_tea_id,teatocla_class_id) values (%s,%s)', result)
+        obj.close()
+    except Exception as e:
+        res['state'] = False
+        res['message'] = str(e)
+
+    return HttpResponse(json.dumps(res))
