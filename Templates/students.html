@@ -30,26 +30,34 @@
             margin-left: -200px;
             margin-top: -150px;
         }
-        td {
+        td{
             text-align: center;
-            }
+        }
     </style>
     <script src="/static/jquery-3.4.1.js"></script>
-    <script src="/static/DataTables/DataTables-1.10.21/js/jquery.dataTables.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="/static/DataTables/DataTables-1.10.21/css/jquery.dataTables.min.css">
+    <script src="/static/plugins/DataTables/DataTables-1.10.21/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/plugins/DataTables/DataTables-1.10.21/css/jquery.dataTables.min.css">
+    <script src="/static/plugins/bootstrap3/js/bootstrap.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/plugins/bootstrap3/css/bootstrap.css">
 
 </head>
 <body>
-<h1>Student Page</h1>
-<a href="/add_student/">新增</a>-----
-<a id="addStuModal">编辑框新增</a>
+<div style="margin-top: 30px">
+    <a class="btn btn-success" href="/add_student/">添加学生（test）</a>&nbsp;&nbsp;&nbsp;&nbsp;
+    <a class="btn btn-success" id="addStuModal">添加学生</a>
+</div>
 
-<table id="stuTable">
+<div style="margin-top: 30px">
+<!--<table id="stuTable" class="table table-hover">-->
+    <table class="table table-hover table-bordered" border="1" width="800">
     <thead>
     <tr>
         <th>学生ID</th>
         <th>学生姓名</th>
         <th>学生班级</th>
+        <th>班主任姓名</th>
+        <th>班主任联系方式</th>
+        <th>午餐午休</th>
         <th>操作</th>
     </tr>
     </thead>
@@ -58,11 +66,15 @@
     <tr>
         <td>{{row.stu_id}}</td>
         <td>{{row.stu_name }}</td>
+
         <td clsId="{{row.stu_class_id}}">{{row.class_name }}</td>
+        <td>欧阳欧阳</td>
+        <td>13333333333</td>
+        <td>是</td>
         <td>
-            <a href="/del_student/?nid={{ row.stu_id }}">DEL</a>|
-            <a href="/edit_student/?nid={{ row.stu_id }}">EDIT</a>
-            <a class="editStuModal">编辑框编辑</a>
+            <a class="btn btn-danger btn-xs" href="/del_student/?nid={{ row.stu_id }}">删除</a>&nbsp;&nbsp;
+            <a class="btn btn-primary btn-xs" href="/edit_student/?nid={{ row.stu_id }}">编辑(test)</a>&nbsp;&nbsp;
+            <a class="editStuModal btn btn-success btn-xs">编辑</a>
         </td>
     </tr>
     {% endfor%}
@@ -72,6 +84,9 @@
         <th>学生ID</th>
         <th>学生姓名</th>
         <th>学生班级</th>
+        <th>班主任姓名</th>
+        <th>班主任联系方式</th>
+        <th>午餐午休</th>
         <th>操作</th>
     </tr>
     </thead>
@@ -109,7 +124,7 @@
             学生班级：
             <select id="editClassId" name="classId">
                 {%for row in classes_list%}
-                <option value="{{row.class_id}}">{{row.class_name}}</option>
+                    <option value="{{row.class_id}}">{{row.class_name}}</option>
                 {%endfor%}
             </select>
         </p>
@@ -124,6 +139,7 @@
     </div>
 
 </table>
+</div>
 <script>
 
     $(function(){
@@ -170,9 +186,9 @@
         $(".editStuModal").click(function () {
             $('#shadow,#editModal').removeClass('hide');
             var ss = $(this).parent().prevAll();
-            var stu_id = $(ss[2]).text();
-            var stu_name = $(ss[1]).text();
-            var class_id = $(ss[0]).attr('clsId');
+            var stu_id = $(ss[5]).text();
+            var stu_name = $(ss[4]).text();
+            var class_id = $(ss[3]).attr('clsId');
             //console.log(stu_id,stu_name,class_id)
 
             $('#editStuId').val(stu_id);
@@ -204,8 +220,34 @@
     });
 
     $(document).ready(function(){
-        $('#stuTable').DataTable();
-    });
+        $('#stuTable').DataTable({
+            language:{
+                "sProcessing": "处理中...",
+                "sLengthMenu": "显示 _MENU_ 项结果",
+                "sZeroRecords": "没有匹配结果",
+                "sInfo": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                "sInfoEmpty": "显示第 0 至 0 项结果，共 0 项",
+                "sInfoFiltered": "(由 _MAX_ 项结果过滤)",
+                "sInfoPostFix": "",
+                "sSearch": "搜索:",
+                "sUrl": "",
+                "sEmptyTable": "表中数据为空",
+                "sLoadingRecords": "载入中...",
+                "sInfoThousands": ",",
+                "oPaginate": {
+                "sFirst": "首页",
+                "sPrevious": "上页",
+                "sNext": "下页",
+                "sLast": "末页"
+                },
+                "oAria": {
+                "sSortAscending": ": 以升序排列此列",
+                "sSortDescending": ": 以降序排列此列"
+                }
+            }
+        });
+});
+
 </script>
 
 </body>

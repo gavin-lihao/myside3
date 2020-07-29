@@ -5,6 +5,10 @@ import json
 import time
 
 
+def index(request):
+    return render(request, "index.html")
+
+
 def classes(request):
     # conn = pymysql.connect(host='127.0.0.1', port=3306, user='root', passwd='root1234', db='db_mysite')
     #
@@ -324,7 +328,7 @@ def modal_edit_teacher(request):
             temp = (tea_id, row)
             result.append(temp)
 
-        #print(result)
+        # print(result)
         obj.multiple_modify('insert into teatocla(teatocla_tea_id,teatocla_class_id) values (%s,%s)', result)
         obj.close()
     except Exception as e:

@@ -18,6 +18,7 @@ from django.urls import path
 from apps import views
 
 urlpatterns = [
+    path('', views.index, name='home'),
     # path('admin/', admin.site.urls),
     path('classes/', views.classes),
     path('add_class/', views.add_class),

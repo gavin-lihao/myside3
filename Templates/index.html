@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="renderer" content="webkit">
+    <title>后台管理中心</title>  
+    <link rel="stylesheet" href="../static/plugins/modal/css/pintuer.css">
+    <link rel="stylesheet" href="../static/plugins/modal/css/admin.css">
+    <script src="../static/plugins/modal/js/jquery.js"></script>
+</head>
+<body style="background-color:#f2f9fd;">
+<div class="header bg-main">
+  <div class="logo margin-big-left fadein-top">
+    <h1><img src="../static/plugins/modal/images/y.jpg" class="radius-circle rotate-hover" height="50" alt="" />午餐午休工作管理中心</h1>
+  </div>
+  <div class="head-l">
+    <a class="button button-little bg-green" href="" target="_blank"><span class="icon-home"></span> 前台首页</a> &nbsp;&nbsp;
+    <a class="button button-little bg-blue" onclick="clearHc();"><span class="icon-wrench"></span> 清除缓存</a> &nbsp;&nbsp;
+    <a class="button button-little bg-red" href="login.html"><span class="icon-power-off"></span> 退出登录</a> </div>
+</div>
+<div class="leftnav">
+  <h2><span class="icon-user"></span>概括图表信息</h2>
+
+  <div class="leftnav-title"><strong><span class="icon-list"></span>菜单列表</strong></div>
+  
+  <h2><span class="icon-user"></span>基础信息管理</h2>
+  <ul style="display:block">
+    <li><a href="/students/" target="right"><span class="icon-caret-right"></span>学生管理</a></li>
+    <li><a href="students.html" target="right"><span class="icon-caret-right"></span>教师管理</a></li>
+    <li><a href="students.html" target="right"><span class="icon-caret-right"></span>班级管理</a></li>
+  </ul>   
+  <h2><span class="icon-user"></span>午餐午休管理</h2>
+  <ul>
+    <li><a href="students.html" target="right"><span class="icon-caret-right"></span>午餐午休学生管理</a></li>
+    <li><a href="students.html" target="right"><span class="icon-caret-right"></span>午餐午休教师管理</a></li>
+    <li><a href="students.html" target="right"><span class="icon-caret-right"></span>午餐午休班级信息</a></li>
+    <li><a href="students.html" target="right"><span class="icon-caret-right"></span>午餐午休处罚信息</a></li>
+  </ul>  
+</div>
+
+<ul class="bread">
+  <li><a href="students.html" target="right" class="icon-home"> 首页</a></li>
+  <li><a href="##" id="a_leader_txt">网站信息</a></li>
+  <li><b>当前语言：</b><span style="color:red;">中文</php></span>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;切换语言：<a href="##">中文</a> &nbsp;&nbsp;<a href="##">英文</a> </li>
+</ul>
+<div class="admin">
+  <iframe id="ifr_url" scrolling="auto" scr="students.html" rameborder="0" name="right" width="100%" height="100%">
+
+
+  </iframe>
+</div>
+<div style="text-align:center;">
+</div>
+
+<script type="text/javascript">
+$(function(){
+  $(".leftnav h2").click(function(){
+	  $(this).next().slideToggle(200);
+	  $(this).toggleClass("on");
+  });
+
+  $(".leftnav ul li a").click(function(){
+	    $("#a_leader_txt").text($(this).text());
+  		$(".leftnav ul li a").removeClass("on");
+		$(this).addClass("on");
+  });
+
+  function clearHc(){
+
+    alert('清理缓存成功！')
+  }
+
+  //$('#ifr_url').attr('src','/students/')
+});
+</script>
+</body>
+</html>
