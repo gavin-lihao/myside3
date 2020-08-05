@@ -3,10 +3,26 @@ import pymysql
 from utils import sqlhelper
 import json
 import time
+from random import choice
 
 
 def index(request):
     return render(request, "index.html")
+
+
+def test(request):
+    result = []
+    for row in range(300):
+        foo = [1, 2, 3]
+        temp = ('stu' + str(row), choice(foo))
+        result.append(temp)
+    # print(result)
+    obj = sqlhelper.SqlHelper()
+    # self.cursor.executemany(insert into db(id, name), [(1, 'name1'), (2, 'name2')])
+    obj.multiple_modify('insert into stu_info(stu_name,stu_class_id) value (%s,%s)', result)
+
+    obj.close()
+    return HttpResponse("...")
 
 
 def classes(request):
