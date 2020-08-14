@@ -32,69 +32,75 @@
         }
 
         td{
+        td {
+            text-align: center;
+        }
+
+        #th_cen {
             text-align: center;
         }
     </style>
     <script src="/static/jquery-3.4.1.js"></script>
     <script src="/static/plugins/DataTables/DataTables-1.10.21/js/jquery.dataTables.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="/static/plugins/DataTables/DataTables-1.10.21/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css"
+          href="/static/plugins/DataTables/DataTables-1.10.21/css/jquery.dataTables.min.css">
     <script src="/static/plugins/bootstrap3/js/bootstrap.js"></script>
     <link rel="stylesheet" type="text/css" href="/static/plugins/bootstrap3/css/bootstrap.css">
 
 </head>
 <body>
-    <div style="margin-top: 30px">
-        <a class="btn btn-danger" href="##">批量删除</a>&nbsp;&nbsp;
-        <a class="btn btn-success" href="/add_student/">添加学生（test）</a>&nbsp;&nbsp;&nbsp;&nbsp;
-        <a class="btn btn-success" id="addStuModal">添加学生</a>
-    </div>
-    <div style="margin-top: 30px"></div>
+<div style="margin-top: 30px">
+    <a class="btn btn-danger" href="##">批量删除</a>&nbsp;&nbsp;
+    <a class="btn btn-success" href="/add_student/">添加学生（test）</a>&nbsp;&nbsp;&nbsp;&nbsp;
+    <a class="btn btn-success" id="addStuModal">添加学生</a>
+</div>
+<div style="margin-top: 30px"></div>
 
 <!--<table id="stuTable" class="table table-hover">-->
-    <table id="stuTable" class="table table-hover table-bordered" border="1">
-        <thead>
-        <tr>
-            <th>序号</th>
-            <th>学生ID</th>
-            <th>学生姓名</th>
-            <th>学生班级</th>
-            <th>班主任姓名</th>
-            <th>班主任联系方式</th>
-            <th>午餐午休</th>
-            <th>操作</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for row in students_list %}
-        <tr>
-            <td>12</td>
-            <td>{{row.stu_id}}</td>
-            <td>{{row.stu_name }}</td>
+<table id="stuTable" class="table table-hover table-bordered" border="1">
+    <thead>
+    <tr>
+        <th id="th_cen">序号</th>
+        <th id="th_cen">学生ID</th>
+        <th id="th_cen">学生姓名</th>
+        <th id="th_cen">学生班级</th>
+        <th id="th_cen">班主任姓名</th>
+        <th id="th_cen">班主任联系方式</th>
+        <th id="th_cen">午餐午休</th>
+        <th id="th_cen">操作</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for row in students_list %}
+    <tr>
+        <td>12</td>
+        <td>{{row.stu_id}}</td>
+        <td>{{row.stu_name }}</td>
 
-            <td clsId="{{row.stu_class_id}}">{{row.class_name }}</td>
-            <td>欧阳欧阳</td>
-            <td>13333333333</td>
-            <td>是</td>
-            <td>
-                <a class="btn btn-danger btn-xs" href="/del_student/?nid={{ row.stu_id }}">删除</a>&nbsp;&nbsp;
-                <a class="btn btn-primary btn-xs" href="/edit_student/?nid={{ row.stu_id }}">编辑(test)</a>&nbsp;&nbsp;
-                <a class="editStuModal btn btn-success btn-xs">编辑</a>
-            </td>
-        </tr>
-        {% endfor%}
-        </tbody>
-        <thead>
-        <tr>
-            <th>序号</th>
-            <th>学生ID</th>
-            <th>学生姓名</th>
-            <th>学生班级</th>
-            <th>班主任姓名</th>
-            <th>班主任联系方式</th>
-            <th>午餐午休</th>
-            <th>操作</th>
-        </tr>
-        </thead>
+        <td clsId="{{row.stu_class_id}}">{{row.class_name }}</td>
+        <td>欧阳欧阳</td>
+        <td>13333333333</td>
+        <td>是</td>
+        <td>
+            <a class="btn btn-danger btn-xs" href="/del_student/?nid={{ row.stu_id }}">删除</a>&nbsp;&nbsp;
+            <a class="btn btn-primary btn-xs" href="/edit_student/?nid={{ row.stu_id }}">编辑(test)</a>&nbsp;&nbsp;
+            <a class="editStuModal btn btn-success btn-xs">编辑</a>
+        </td>
+    </tr>
+    {% endfor%}
+    </tbody>
+    <thead>
+    <tr>
+        <th>序号</th>
+        <th>学生ID</th>
+        <th>学生姓名</th>
+        <th>学生班级</th>
+        <th>班主任姓名</th>
+        <th>班主任联系方式</th>
+        <th>午餐午休</th>
+        <th>操作</th>
+    </tr>
+    </thead>
 </table>
 
 <div id="shadow" class="my_shadow my_hide"></div>
@@ -107,7 +113,7 @@
         学生班级：
         <select id="classId" name="classId">
             {%for row in classes_list%}
-                <option value="{{row.class_id}}">{{row.class_name}}</option>
+            <option value="{{row.class_id}}">{{row.class_name}}</option>
             {%endfor%}
         </select>
     </p>
@@ -122,30 +128,30 @@
 </div>
 
 <div id="editModal" class="my_modal my_hide">
-        <h1>编辑新的学生信息</h1>
-        <p>学生姓名：<input id="editStuName" type="text" name="stuName"/>
-            <input id="editStuId" type="text" name="stuName"style="display: none"/>
-        </p>
-        <p>
-            学生班级：
-            <select id="editClassId" name="classId">
-                {%for row in classes_list%}
-                    <option value="{{row.class_id}}">{{row.class_name}}</option>
-                {%endfor%}
-            </select>
-        </p>
-        <p>
-            <input id="editNewStuBtn" type="button" value="提交"/>
-            <input id="editMoveModal" type="button" value="取消"/>
-        </p>
-        <p>
-            <span id="editErrorMessage"></span>
-        </p>
+    <h1>编辑新的学生信息</h1>
+    <p>学生姓名：<input id="editStuName" type="text" name="stuName"/>
+        <input id="editStuId" type="text" name="stuName" style="display: none"/>
+    </p>
+    <p>
+        学生班级：
+        <select id="editClassId" name="classId">
+            {%for row in classes_list%}
+            <option value="{{row.class_id}}">{{row.class_name}}</option>
+            {%endfor%}
+        </select>
+    </p>
+    <p>
+        <input id="editNewStuBtn" type="button" value="提交"/>
+        <input id="editMoveModal" type="button" value="取消"/>
+    </p>
+    <p>
+        <span id="editErrorMessage"></span>
+    </p>
 
 </div>
 <script>
 
-    $(function(){
+    $(function () {
         //点击取消，回到正常桌面
         $('#addMoveModal').click(function () {
             $('#shadow,#addModal').addClass('my_hide')
@@ -155,31 +161,31 @@
             $('#shadow,#editModal').addClass('my_hide')
         });
 
-        $('#addStuModal').click(function(){
+        $('#addStuModal').click(function () {
             $('#shadow,#addModal').removeClass('my_hide');
         });
 
-        $('.editStuModal').click(function(){
+        $('.editStuModal').click(function () {
             $('#shadow,#editModal').removeClass('my_hide');
         });
 
         //增加新学生信息
-        $('#addNewStuBtn').click(function(){
+        $('#addNewStuBtn').click(function () {
 
             var stu_name = $('#addStuName').val();
             var class_id = $('#classId').val();
-            console.log(stu_name,class_id);
+            console.log(stu_name, class_id);
             $.ajax({
-                url:'/modal_add_student/',
-                type:'POST',
-                data:{"stu_name":stu_name,"class_id":class_id},
+                url: '/modal_add_student/',
+                type: 'POST',
+                data: {"stu_name": stu_name, "class_id": class_id},
 
-                success:function (arg) {
+                success: function (arg) {
                     arg = JSON.parse(arg);
-                    if(arg.state){
+                    if (arg.state) {
 
                         location.reload();
-                    }else {
+                    } else {
                         alert(arg.message);
                         //$('#addErrorMessage').val(arg.message)
                     }
@@ -202,19 +208,19 @@
 
         $('#editNewStuBtn').click(function () {
             $.ajax({
-                url:'/modal_edit_student/',
-                type:'POST',
-                data:{
-                    'stu_id':$('#editStuId').val(),
-                    'stu_name':$('#editStuName').val(),
-                    'class_id':$('#editClassId').val()
+                url: '/modal_edit_student/',
+                type: 'POST',
+                data: {
+                    'stu_id': $('#editStuId').val(),
+                    'stu_name': $('#editStuName').val(),
+                    'class_id': $('#editClassId').val()
 
                 },
                 dataType: 'JSON',
-                success:function (arg) {
-                    if(arg.state){
+                success: function (arg) {
+                    if (arg.state) {
                         location.reload();
-                    }else{
+                    } else {
 
                         $('#editErrorMessage').val(arg.message)
                     }
@@ -223,9 +229,9 @@
         })
     });
 
-    $(document).ready(function(){
+    $(document).ready(function () {
         $('#stuTable').DataTable({
-            language:{
+            language: {
                 "sProcessing": "处理中...",
                 "sLengthMenu": "显示 _MENU_ 项结果",
                 "sZeroRecords": "没有匹配结果",
@@ -239,18 +245,18 @@
                 "sLoadingRecords": "载入中...",
                 "sInfoThousands": ",",
                 "oPaginate": {
-                "sFirst": "首页",
-                "sPrevious": "上页",
-                "sNext": "下页",
-                "sLast": "末页"
+                    "sFirst": "首页",
+                    "sPrevious": "上页",
+                    "sNext": "下页",
+                    "sLast": "末页"
                 },
                 "oAria": {
-                "sSortAscending": ": 以升序排列此列",
-                "sSortDescending": ": 以降序排列此列"
+                    "sSortAscending": ": 以升序排列此列",
+                    "sSortDescending": ": 以降序排列此列"
                 }
             }
         });
-});
+    });
 
 </script>
 
